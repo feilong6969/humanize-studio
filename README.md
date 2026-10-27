@@ -4,7 +4,7 @@ An English/Japanese AI writing assistant for macOS. The repository also includes
 
 ## Native Mac app
 
-**Automatic build:** Open [Actions](https://github.com/feilong6969/humanize-studio/actions/workflows/build-macos.yml), choose the latest successful **Build macOS app** workflow, and download its `HumanizeStudio-macOS` artifact. Unzip it, then move the app into Applications.
+**Automatic build:** Open [Actions](https://github.com/feilong6969/humanize-studio/actions/workflows/build-macos.yml), choose the latest successful **Build macOS app** workflow, and download its `Press Me` artifact. Unzip the downloaded artifact, then open `Press Me.zip`, and move `HumanizeStudio.app` into Applications.
 
 **Build on your Mac:** Install Xcode Command Line Tools, clone this repository, and run:
 
