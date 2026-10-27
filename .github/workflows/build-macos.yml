@@ -1,0 +1,22 @@
+name: Build macOS app
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'macos/**'
+      - 'build-mac.sh'
+      - '.github/workflows/build-macos.yml'
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build macOS application
+        run: bash build-mac.sh
+      - name: Package app
+        run: cd dist && ditto -c -k --sequesterRsrc --keepParent HumanizeStudio.app HumanizeStudio.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HumanizeStudio-macOS
+          path: dist/HumanizeStudio.zip
