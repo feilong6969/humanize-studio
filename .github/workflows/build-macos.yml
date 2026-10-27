@@ -15,8 +15,8 @@ jobs:
       - name: Build macOS application
         run: bash build-mac.sh
       - name: Package app
-        run: cd dist && ditto -c -k --sequesterRsrc --keepParent HumanizeStudio.app Press Me.zip
+        run: cd dist && ditto -c -k --sequesterRsrc --keepParent HumanizeStudio.app 'Press Me.zip'
       - uses: actions/upload-artifact@v4
         with:
           name: Press Me
-          path: dist/Press Me.zip
+          path: 'dist/Press Me.zip'
