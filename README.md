@@ -1,21 +1,28 @@
 # Humanize Studio ✦
 
-A simple English/Japanese writing rewriter with four styles: Natural, Casual, Simple, and Professional.
+An English/Japanese AI writing assistant for macOS. The repository also includes a simple browser prototype.
 
-## Free browser version
-Open `index.html` in your browser or use GitHub Pages. The free browser version only makes **basic offline edits**, not full AI rewriting, so changes may be small.
+## Native Mac app
 
-To publish on GitHub Pages, go to **Settings → Pages → Deploy from a branch → main → /root → Save**.
+**Automatic build:** Open [Actions](https://github.com/feilong6969/humanize-studio/actions/workflows/build-macos.yml), choose the latest successful **Build macOS app** workflow, and download its `HumanizeStudio-macOS` artifact. Unzip it, then move the app into Applications.
 
-## Optional AI-powered mode
-Requires Node.js 18+, your own OpenAI API key, and an AI API account (usage may incur charges).
-
-Set `OPENAI_API_KEY` in your local environment and run:
+**Build on your Mac:** Install Xcode Command Line Tools, clone this repository, and run:
 
 ```bash
-node server.js
+bash build-mac.sh
+open dist/HumanizeStudio.app
 ```
 
-Open http://localhost:3000. Do not put API keys in the repository or browser JavaScript. GitHub Pages **cannot** host the Node.js backend.
+This creates an ad-hoc signed app. Because it is not notarized by Apple, macOS might warn when opening a downloaded build. Only open builds you trust.
 
-Always check rewritten text for accuracy. This does not guarantee any AI-detector outcome.
+**Using AI:** You need your own OpenAI API key with API billing enabled. Enter the key in the app, select **Save key**, paste text, and press **Rewrite with AI**. The key is stored in your macOS Keychain (not the repository). Text is sent to OpenAI only when you click Rewrite; usage may incur API charges. This app uses `gpt-4.1-mini` by default.
+
+Languages: **English and Japanese**. Styles: Natural, Casual, Simple, Professional, Student.
+
+## Browser prototype
+
+Open `index.html` directly; it offers only basic rule-based offline changes. Optional server mode: use Node.js 18+, set `OPENAI_API_KEY` locally and run `node server.js`. Do not commit API keys.
+
+## Important
+
+AI rewritten text should be checked for accuracy. No AI-detector result can be guaranteed. The macOS app must be compiled on macOS; this repository contains a GitHub Actions build workflow, but a successful build has not yet been verified.
