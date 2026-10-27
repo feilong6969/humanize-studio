@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Humanize Studio — Natural Writing</title>
+<style>
+:root{font-family:Inter,system-ui,sans-serif;color-scheme:dark;--bg:#0b1020;--panel:#151c30;--border:#35405b;--ink:#f2f6ff;--sub:#abb9d7;--mint:#8cf2ba}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0%,#22395c,transparent 50%),var(--bg);color:var(--ink);min-height:100vh}
+main{max-width:1040px;margin:0 auto;padding:36px 22px 70px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:50px}.brand{font-weight:800;font-size:21px}.tag{font-size:12px;border:1px solid var(--border);border-radius:40px;padding:8px 12px;color:var(--sub)}
+h1{font-size:clamp(38px,6vw,64px);letter-spacing:-.055em;line-height:1.08;margin:0 0 15px}.lead{color:var(--sub);line-height:1.7;max-width:650px;margin-bottom:36px}
+.accent{color:var(--mint)}.options{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}.control{background:var(--panel);color:var(--ink);border:1px solid var(--border);border-radius:12px;padding:11px 13px;font:inherit}
+.workspace{display:grid;grid-template-columns:1fr 1fr;gap:16px}.panel{background:rgba(21,28,48,.94);border:1px solid var(--border);border-radius:20px;padding:19px;min-width:0}
+.paneltop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.panel strong{font-size:15px}.count{color:var(--sub);font-size:12px}
+textarea{width:100%;min-height:290px;resize:vertical;background:#0e1628;border:1px solid var(--border);border-radius:13px;padding:16px;color:var(--ink);font:15px/1.75 inherit;outline:none}
+textarea:focus{border-color:var(--mint)}textarea::placeholder{color:#8391ad}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}button{cursor:pointer;border-radius:12px;border:1px solid var(--border);background:#22304a;color:var(--ink);padding:11px 15px;font:600 14px inherit}button:hover{filter:brightness(1.13)}.primary{background:var(--mint);border-color:var(--mint);color:#102417;font-weight:800;flex:1}
+.status{margin:20px 0;color:var(--sub);font-size:13px;line-height:1.6}.hint{border:1px solid var(--border);background:#111a2d;border-radius:14px;padding:16px;color:var(--sub);font-size:13px;line-height:1.7;margin-top:22px}
+@media(max-width:760px){header{margin-bottom:30px}.workspace{grid-template-columns:1fr}textarea{min-height:220px}}
+</style></head>
+<body><main>
+<header><span class="brand">✦ Humanize Studio</span><span class="tag">English + 日本語</span></header>
+<h1>Make your writing<br><span class="accent">sound more natural.</span></h1>
+<p class="lead">Paste a paragraph, choose a style, and rewrite it in clearer, more human-sounding language while keeping the original meaning.</p>
+<div class="options"><label>Style <select class="control" id="tone"><option value="natural">Natural</option><option value="casual">Casual</option><option value="simple">Simple</option><option value="professional">Professional</option></select></label>
+<label>Language <select class="control" id="language"><option value="auto">Auto-detect</option><option value="en">English</option><option value="ja">日本語</option></select></label></div>
+<section class="workspace">
+<div class="panel"><div class="paneltop"><strong>Your text</strong><span class="count" id="inCount">0 characters</span></div><textarea id="input" placeholder="Paste your writing here..."></textarea><div class="actions"><button id="sample" type="button">Try example</button><button id="clear" type="button">Clear</button><button class="primary" id="rewrite" type="button">✦ Humanize text</button></div></div>
+<div class="panel"><div class="paneltop"><strong>Rewritten text</strong><span class="count" id="outCount">0 characters</span></div><textarea id="output" readonly placeholder="Your improved writing will appear here..."></textarea><div class="actions"><button id="copy" type="button">Copy result</button></div></div>
+</section>
+<p class="status" id="status" role="status">Ready. With no AI server configured, the site uses basic offline editing.</p>
+<div class="hint"><strong>About this tool:</strong> Offline mode performs limited cleanup and phrasing substitutions. For more meaningful AI rewrites, run the optional Node.js backend with your own API key. GitHub Pages supports only offline mode. Always review the output for accuracy; no detector outcome is guaranteed.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id),input=$('input'),output=$('output');
+function counters(){$('inCount').textContent=input.value.length+' characters';$('outCount').textContent=output.value.length+' characters'}
+input.addEventListener('input',counters);
+$('sample').onclick=()=>{input.value='In today’s society, it is extremely important to take into consideration the fact that getting enough sleep has many positive benefits for students. It can help them to focus better on their studies and feel more energetic during the day.';counters()};
+$('clear').onclick=()=>{input.value='';output.value='';$('status').textContent='Cleared.';counters()};
+$('copy').onclick=async()=>{if(!output.value)return;try{await navigator.clipboard.writeText(output.value);$('status').textContent='Copied to clipboard.'}catch{$('status').textContent='Select the result and copy it manually.'}};
+function offline(text,tone,lang){
+let t=text.trim().replace(/[ \t]{2,}/g,' ').replace(/\n{3,}/g,'\n\n');
+const japanese=lang==='ja'||(lang==='auto'&&/[ぁ-んァ-ン一-龯]/.test(t));
+if(japanese){t=t.replace(/ということができます/g,'できます').replace(/することができます/g,'できます').replace(/非常に/g,tone==='casual'?'すごく':'とても').replace(/において/g,'で').replace(/ということです/g,'です');return t}
+const pairs=[[/\bin today'?s society\b/gi,'today'],[/\bit is extremely important to take into consideration the fact that\b/gi,'it is worth remembering that'],[/\bin order to\b/gi,'to'],[/\bdue to the fact that\b/gi,'because'],[/\ba large number of\b/gi,'many'],[/\bat this point in time\b/gi,'now'],[/\butilize\b/gi,'use'],[/\bcommence\b/gi,'start'],[/\bmoreover\b/gi,'also'],[/\btherefore\b/gi,'so']];
+pairs.forEach(([a,b])=>t=t.replace(a,b));
+if(tone==='simple'){t=t.replace(/\bpositive benefits\b/gi,'benefits').replace(/\bapproximately\b/gi,'about').replace(/\bassistance\b/gi,'help')}
+if(tone==='casual'){t=t.replace(/\bit is worth remembering that\b/gi,'remember,').replace(/\bdo not\b/gi,"don't").replace(/\bcannot\b/gi,"can't")}
+if(tone==='professional'){t=t.replace(/\ba lot of\b/gi,'many')}
+return t.replace(/\s+([,.!?;:])/g,'$1').replace(/^([a-z])/,m=>m.toUpperCase())
+}
+$('rewrite').onclick=async()=>{
+const t=input.value.trim();if(!t){$('status').textContent='Paste some text first.';input.focus();return}
+const tone=$('tone').value,language=$('language').value;
+$('rewrite').disabled=true;$('status').textContent='Rewriting…';
+try{const res=await fetch('/api/rewrite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:t,tone,language})});if(!res.ok)throw Error('Offline fallback');const data=await res.json();if(!data.text)throw Error('Empty result');output.value=data.text;$('status').textContent='Done — rewritten with AI.'}
+catch{output.value=offline(t,tone,language);$('status').textContent='Done — used offline edits (limited rewriting; AI backend not connected).'}
+finally{$('rewrite').disabled=false;counters()}
+};
+</script></body></html>
